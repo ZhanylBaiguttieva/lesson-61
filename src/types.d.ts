@@ -13,4 +13,5 @@ export interface ApiFullCountry {
   capital: string;
   subregion: string;
   population: number;
+  borders: [];
 }

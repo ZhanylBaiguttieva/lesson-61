@@ -1,9 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {ApiFullCountry} from '../types';
+import {APICountry, ApiFullCountry} from '../types';
 import axios from 'axios';
 
 interface Props {
-
   alpha3Code: string | null;
 }
 
@@ -12,7 +11,9 @@ const FullCountry:React.FC<Props> = ({
                                        alpha3Code,
                                        }) => {
   const [country, setCountry] = useState<ApiFullCountry | null> (null);
-  const fetchPost = useCallback( async() => {
+  const [borders, setBorders] = useState<APICountry[] | null>(null);
+
+  const fetchData = useCallback( async() => {
     if(alpha3Code !== null) {
       const postResponse = await axios.get<ApiFullCountry>(INFO_URL + alpha3Code);
       setCountry(postResponse.data);
@@ -20,8 +21,25 @@ const FullCountry:React.FC<Props> = ({
   }, [alpha3Code]);
 
   useEffect(() => {
-    void fetchPost();
-  }, [fetchPost]);
+    void fetchData();
+  }, [fetchData]);
+
+  const fetchBorderData = useCallback( async() => {
+    const result = country?.borders.map( async border => {
+      const borderResponse = await axios.get<APICountry>(INFO_URL + border);
+      return borderResponse.data;
+    });
+
+    if(result !== undefined) {
+      const newBorders = await Promise.all(result);
+      setBorders(newBorders);
+    }
+  }, [country]);
+
+  useEffect(() => {
+    void fetchBorderData();
+  }, [fetchBorderData]);
+
 
   return country && (
     <div className="FullCountry">
@@ -29,7 +47,8 @@ const FullCountry:React.FC<Props> = ({
       <p><strong>Capital: </strong>{country.capital}</p>
       <p><strong>Subregion: </strong>{country.subregion}</p>
       <p><strong>Population: </strong>{country.population}</p>
-      <h4>Borders with:</h4>
+      <h4>Borders with:{borders?.map(border =>
+        <li>{border.name}</li>)}</h4>
     </div>
   );
 };
