@@ -7,7 +7,7 @@ interface Props {
 const Country: React.FC<Props> = ({name, onClick}) => {
   return (
     <div onClick={onClick}>
-      <p>{name}</p>
+      <p className="text-start">{name}</p>
     </div>
   );
 };

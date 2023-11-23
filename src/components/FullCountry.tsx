@@ -34,7 +34,7 @@ const FullCountry:React.FC<Props> = ({
       const newBorders = await Promise.all(result);
       setBorders(newBorders);
     }
-  }, [country]);
+  }, [country?.borders]);
 
   useEffect(() => {
     void fetchBorderData();
@@ -42,13 +42,15 @@ const FullCountry:React.FC<Props> = ({
 
 
   return country && (
-    <div className="FullCountry">
+    <div className="FullCountry text-start">
       <p className="fs-3"><strong>{country.name}</strong></p>
       <p><strong>Capital: </strong>{country.capital}</p>
       <p><strong>Subregion: </strong>{country.subregion}</p>
       <p><strong>Population: </strong>{country.population}</p>
-      <h4>Borders with:{borders?.map(border =>
-        <li>{border.name}</li>)}</h4>
+      {country.borders && (
+        <ul className="fw-normal fs-5">Borders with:{borders?.map(border =>
+          <li>{border.name}</li>)}</ul>
+      )}
     </div>
   );
 };
